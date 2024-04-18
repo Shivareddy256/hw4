@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/dictionary.js"></script>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <p>Shiva's Cool personal Website Home Page </p>
+            <ul>   
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/blog.html">Blog</a></li>
+                <li><a href="./about.html">About</a></li>
+                <li> <a href="#"> Dictionary </a></li>
+            </ul>
+        </nav>
+    </header>
+    <input type="text" id="synonyms">
+
+    <ol id="synonymsList">
+
+    </ol>
+</body>
+</html>
+
+<script>
+
+const synonyms = document.getElementById('synonyms');
+    const synonymsList = document.getElementById('synonymsList');
+    
+    synonyms.addEventListener('input', fetchDefinitions);
+    
+async function fetchDefinitions() {
+    const word = synonyms.value.trim();
+    if (word === '') {
+        synonymsList.innerHTML = '';
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const data = await response.json();
+
+        synonymsList.innerHTML = data.map(entry => {
+            return entry.meanings.map(meaning => {
+                return meaning.definitions.map(def => {
+                    return `<ol><li><strong>${meaning.partOfSpeech}</strong>: ${def.definition}</li></ol>`;
+                }).join('');
+            }).join('');
+        }).join('');
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        synonymsList.innerHTML = '<li>Error fetching data. Please try again later.</li>';
+    }
+}
+</script>
